@@ -1,0 +1,19 @@
+﻿<Application x:Class="ApplicationRobot.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:ApplicationRobot"
+             Startup="ApplicationStart">
+    <Application.Resources>
+
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/UIColors.xaml"/>
+                <ResourceDictionary Source="/Styles/ButtonStyles.xaml"/>
+                <ResourceDictionary Source="/Styles/TextBoxSearchStyles.xaml"/>
+                <ResourceDictionary Source="/Styles/DataGridStyles.xaml"/>
+                <ResourceDictionary Source="Styles/ImageStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+
+    </Application.Resources>
+</Application>
