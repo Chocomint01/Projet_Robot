@@ -25,37 +25,14 @@ namespace ApplicationRobot.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "select [password], Id, [Name], LastName from [User] where username=@username";
+                command.CommandText = "select [password] from [User] where username=@username";
                 command.Parameters.Add("@username", SqlDbType.NVarChar).Value = credential.UserName;
-                using (var reader = command.ExecuteReader())
-                {
-                    if (reader.Read())
-                    {
-                        string hashedPassword = reader.GetString(0);
-                        validUser = BCrypt.Net.BCrypt.Verify(credential.Password, hashedPassword);
+                var hashedPassword = (string)command.ExecuteScalar();
 
-                        if (validUser)
-                        {
-                            // Définir AppSettings.CurrentUser
-                            AppSettings.CurrentUser = new UserModel
-                            {
-                                Id = reader[1].ToString(),
-                                Username = credential.UserName,
-                                Password = string.Empty, // Ne stockez pas le mot de passe en clair
-                                Name = reader[2].ToString(),
-                                LastName = reader[3].ToString(),
-                            };
-                        }
-                    }
-                    else
-                    {
-                        validUser = false;
-                    }
-                }
+                validUser = hashedPassword != null && BCrypt.Net.BCrypt.Verify(credential.Password, hashedPassword);
             }
             return validUser;
         }
-
 
         public void Edit(UserModel userModel)
         {
@@ -77,7 +54,7 @@ namespace ApplicationRobot.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "SELECT * FROM [User] WHERE Username=@username";
+                command.CommandText = "select *from [User] where username=@username";
                 command.Parameters.Add("@username", SqlDbType.NVarChar).Value = username;
                 using (var reader = command.ExecuteReader())
                 {
@@ -90,15 +67,12 @@ namespace ApplicationRobot.Repositories
                             Password = string.Empty,
                             Name = reader[3].ToString(),
                             LastName = reader[4].ToString(),
-                            CenterLatitude = reader.IsDBNull(5) ? (double?)null : reader.GetDouble(5),
-                            CenterLongitude = reader.IsDBNull(6) ? (double?)null : reader.GetDouble(6),
                         };
                     }
                 }
             }
             return user;
         }
-
         public void Remove(int id)
         {
             throw new NotImplementedException();

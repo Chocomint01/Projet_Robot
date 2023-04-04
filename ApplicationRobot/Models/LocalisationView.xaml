@@ -48,16 +48,16 @@
             </StackPanel>
 
         </Border>
-        <Border Grid.Row="2" Background="#EDEDED" BorderBrush="Gray" BorderThickness="0" CornerRadius="10" Height="160" VerticalAlignment="Top">
+        <Border Grid.Row="2" Background="#EDEDED" BorderBrush="Gray" BorderThickness="0" CornerRadius="10" Grid.RowSpan="3">
             <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="660"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="320"/>
                 </Grid.ColumnDefinitions>
                 <ScrollViewer Grid.Column="0" VerticalAlignment="Center" Margin="10,0,134,0">
                     <TextBlock x:Name="txtPointsCoordinates" TextWrapping="Wrap"/>
                 </ScrollViewer>
-                <StackPanel Orientation="Vertical" Grid.Column="1">
+                <StackPanel Grid.Column="1" Orientation="Vertical">
                     <Button x:Name="btnDefineArea" Grid.Row="2" Margin="5" Content="Définir la zone" Click="btnDefineArea_Click" Foreground="White"
                             FontSize="12"
                             FontFamily="Montserrat"
@@ -84,68 +84,39 @@
                             </ControlTemplate>
                         </Button.Template>
                     </Button>
-                    <StackPanel Orientation="Horizontal">
-                        <StackPanel Orientation="Vertical">
-                            <Button x:Name="btnFinish" Grid.Column="1" Content="Valider Le Domaine" VerticalAlignment="Center" Margin="10" Click="btnFinish_Click" 
+
+                    <Button x:Name="btnFinish" Grid.Column="1" Content="Valider Le Domaine" VerticalAlignment="Center" Margin="10" Click="btnFinish_Click" 
                         Foreground="White"
                             FontSize="12"
                             FontFamily="Montserrat"
                             Cursor="Hand">
-                                <Button.Style>
-                                    <Style TargetType="Button">
-                                        <Setter Property="Background" Value="#169BC4"/>
-                                        <Style.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="#28AEED"/>
-                                            </Trigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="#169BC4"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#28AEED"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
 
-                                <Button.Template>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Width="150" Height="40"
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Width="150" Height="40"
                                         CornerRadius="20"
                                         Background="{TemplateBinding Background}">
-                                            <ContentPresenter VerticalAlignment="Center"
+                                    <ContentPresenter VerticalAlignment="Center"
                                                       HorizontalAlignment="Center"/>
-                                        </Border>
-                                    </ControlTemplate>
-                                </Button.Template>
-                            </Button>
-                        </StackPanel>
-                        <StackPanel Orientation="Vertical">
-                            <Button x:Name="btnDelete" Grid.Column="1" Content="Supprimer Le Domaine" VerticalAlignment="Center" Margin="10" Click="btnDelete_Click" 
-                        Foreground="White"
-                            FontSize="12"
-                            FontFamily="Montserrat"
-                            Cursor="Hand">
-                                <Button.Style>
-                                    <Style TargetType="Button">
-                                        <Setter Property="Background" Value="#169BC4"/>
-                                        <Style.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="#28AEED"/>
-                                            </Trigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-
-                                <Button.Template>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Width="150" Height="40"
-                                        CornerRadius="20"
-                                        Background="{TemplateBinding Background}">
-                                            <ContentPresenter VerticalAlignment="Center"
-                                                      HorizontalAlignment="Center"/>
-                                        </Border>
-                                    </ControlTemplate>
-                                </Button.Template>
-                            </Button>
-                        </StackPanel>
-                    </StackPanel>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
                     <TextBlock x:Name="txtValidationMessage" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="Green" Margin="0,10,0,0" />
                 </StackPanel>
+
+
+
             </Grid>
         </Border>
     </Grid>

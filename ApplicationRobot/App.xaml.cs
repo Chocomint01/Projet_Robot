@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using ApplicationRobot.Models;
 using ApplicationRobot.Views;
 
 namespace ApplicationRobot
@@ -25,6 +26,16 @@ namespace ApplicationRobot
                     var mainView = new MainView();
                     mainView.Show();
                     loginView.Close();
+
+                    // Chargement de la position de la carte et du niveau de zoom
+                    if (AppSettings.CurrentUser != null)
+                    {
+                        var localisationView = mainView.FindName("LocalisationView") as LocalisationView;
+                        if (localisationView != null)
+                        {
+                            localisationView.LoadMapCenterAndZoomFromDatabase(Guid.Parse(AppSettings.CurrentUser.Id));
+                        }
+                    }
                 }
             };
         }

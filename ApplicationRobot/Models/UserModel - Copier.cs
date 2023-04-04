@@ -14,7 +14,5 @@ namespace ApplicationRobot.Models
         public string Name { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
-        public double? CenterLatitude { get; set; }
-        public double? CenterLongitude { get; set; }
     }
 }

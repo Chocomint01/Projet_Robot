@@ -18,9 +18,11 @@ namespace ApplicationRobot.Views
         private List<Location> polylinePoints;
         private bool isFinished;
 
+
         public LocalisationView()
         {
             InitializeComponent();
+
             polylinePoints = new List<Location>();
             polygon = new MapPolygon
             {
@@ -33,13 +35,6 @@ namespace ApplicationRobot.Views
             btnFinish.IsEnabled = false;
 
             MapWithPolygon.Focus();
-
-            if (AppSettings.CurrentUser != null)
-            {
-                Guid userId = Guid.Parse(AppSettings.CurrentUser.Id);
-                LoadPolygonPointsFromDatabase(userId);
-                UpdatePolygon();
-            }
         }
         private void btnDefineArea_Click(object sender, RoutedEventArgs e)
         {
@@ -47,6 +42,7 @@ namespace ApplicationRobot.Views
             btnFinish.IsEnabled = true;
             btnDefineArea.IsEnabled = false;
         }
+
         private void MapWithPolygon_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (!isFinished)
@@ -55,6 +51,7 @@ namespace ApplicationRobot.Views
                 AddPointToPolyline(e.GetPosition(MapWithPolygon));
             }
         }
+
         private void MapWithPolygon_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Z && !isFinished)
@@ -62,6 +59,7 @@ namespace ApplicationRobot.Views
                 AddPointToPolyline(Mouse.GetPosition(MapWithPolygon));
             }
         }
+
         private void AddPointToPolyline(Point mousePosition)
         {
             Location point = MapWithPolygon.ViewportPointToLocation(mousePosition);
@@ -101,7 +99,7 @@ namespace ApplicationRobot.Views
         }
         private void InsertPolygonPointsToDatabase(Guid userId)
         {
-            using (SqlConnection conn = new SqlConnection("Server=MSI\\LOCAL; Database=MVVMLoginDb; Integrated Security=true"))
+            using (SqlConnection conn = new SqlConnection("your_connection_string"))
             {
                 conn.Open();
 
@@ -121,50 +119,6 @@ namespace ApplicationRobot.Views
                 }
             }
         }
-        public void LoadMapCenterAndZoomFromDatabase(Guid userId)
-        {
-            using (SqlConnection conn = new SqlConnection("Server=MSI\\LOCAL; Database=MVVMLoginDb; Integrated Security=true"))
-            {
-                conn.Open();
-
-                string query = "SELECT MapCenterLatitude, MapCenterLongitude, MapZoomLevel FROM UserMapSettings WHERE UserId = @UserId";
-
-                using (SqlCommand cmd = new SqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@UserId", userId);
-
-                    using (SqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            double centerLatitude = reader.GetDouble(0);
-                            double centerLongitude = reader.GetDouble(1);
-                            double zoomLevel = reader.GetDouble(2);
-
-                            MapWithPolygon.Center = new Location(centerLatitude, centerLongitude);
-                            MapWithPolygon.ZoomLevel = zoomLevel;
-                        }
-                    }
-                }
-            }
-        }
-
-        private void SaveMapCenterToDatabase(Guid userId)
-        {
-            using (SqlConnection conn = new SqlConnection("Server=MSI\\LOCAL; Database=MVVMLoginDb; Integrated Security=true"))
-            {
-                conn.Open();
-                string query = "UPDATE [User] SET CenterLatitude = @CenterLatitude, CenterLongitude = @CenterLongitude WHERE Id = @UserId";
-
-                using (SqlCommand cmd = new SqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@UserId", userId);
-                    cmd.Parameters.AddWithValue("@CenterLatitude", MapWithPolygon.Center.Latitude);
-                    cmd.Parameters.AddWithValue("@CenterLongitude", MapWithPolygon.Center.Longitude);
-                    cmd.ExecuteNonQuery();
-                }
-            }
-        }
 
         private void btnFinish_Click(object sender, RoutedEventArgs e)
         {
@@ -175,26 +129,19 @@ namespace ApplicationRobot.Views
 
             if (AppSettings.CurrentUser != null)
             {
-                Guid userId = Guid.Parse(AppSettings.CurrentUser.Id);
+                // Insérer les points du polygone dans la base de données
+                Guid userId = Guid.Parse(AppSettings.CurrentUser.Id); // Obtenez l'ID de l'utilisateur actuellement connecté
                 InsertPolygonPointsToDatabase(userId);
-                SaveMapCenterToDatabase(userId);
             }
             else
             {
                 txtValidationMessage.Text = $"Vous n'êtes pas connecté";
             }
         }
-        public void SetMapCenterFromUser(UserModel user)
-        {
-            if (user.CenterLatitude.HasValue && user.CenterLongitude.HasValue)
-            {
-                MapWithPolygon.Center = new Location(user.CenterLatitude.Value, user.CenterLongitude.Value);
-            }
-        }
 
         private void LoadPolygonPointsFromDatabase(Guid userId)
         {
-            using (SqlConnection conn = new SqlConnection("Server=MSI\\LOCAL; Database=MVVMLoginDb; Integrated Security=true"))
+            using (SqlConnection conn = new SqlConnection("your_connection_string"))
             {
                 conn.Open();
 
@@ -219,40 +166,7 @@ namespace ApplicationRobot.Views
             }
         }
 
-        //bouton de suppression du polygone 
-        private void btnDelete_Click(object sender, RoutedEventArgs e)
-        {
-            if (AppSettings.CurrentUser != null)
-            {
-                Guid userId = Guid.Parse(AppSettings.CurrentUser.Id);
-                DeletePolygonPointsFromDatabase(userId);
-                RemovePolygonFromMap();
-                txtValidationMessage.Text = "Le domaine a été supprimé.";
-            }
-            else
-            {
-                txtValidationMessage.Text = "Vous n'êtes pas connecté.";
-            }
-        }
 
-        private void DeletePolygonPointsFromDatabase(Guid userId)
-        {
-            using (SqlConnection conn = new SqlConnection("Server=MSI\\LOCAL; Database=MVVMLoginDb; Integrated Security=true"))
-            {
-                conn.Open();
-                string query = "DELETE FROM Zone WHERE UserId = @UserId";
-
-                using (SqlCommand cmd = new SqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@UserId", userId);
-                    cmd.ExecuteNonQuery();
-                }
-            }
-        }
-        private void RemovePolygonFromMap()
-        {
-            NewPolygonLayer.Children.Remove(polygon);
-        }
         private void UpdatePointsCoordinatesText()
         {
             StringBuilder sb = new StringBuilder();
