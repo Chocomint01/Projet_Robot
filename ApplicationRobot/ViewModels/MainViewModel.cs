@@ -11,11 +11,12 @@ using ApplicationRobot.Models;
 using ApplicationRobot.Repositories;
 using ApplicationRobot.Views;
 
+
 namespace ApplicationRobot.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
-        //Fields
+        public ICommand LogoutCommand { get; }
         private UserAccountModel _currentUserAccount;
         private ViewModelBase _currentChildView;
         private string _caption;
@@ -86,17 +87,19 @@ namespace ApplicationRobot.ViewModels
             CurrentUserAccount = new UserAccountModel();
 
 
+
             ShowHomeViewCommand = new ViewModelCommand(ExecuteShowHomeViewCommand);
             ShowLocalisationViewCommand = new ViewModelCommand(ExecuteShowLocalisationCommand);
             ShowHistoriqueViewCommand = new ViewModelCommand(ExecuteShowHistoriqueViewCommand);
             ShowInformationViewCommand = new ViewModelCommand(ExecuteShowInformationViewCommand);
             ShowSettingViewCommand = new ViewModelCommand(ExecuteShowSettingViewCommand);
 
+
+
             ExecuteShowHomeViewCommand(null);
 
             LoadCurrentUserData();
         }
-
         private void ExecuteShowLocalisationCommand(object obj)
         {
             CurrentChildView = new LocalisationViewModel();

@@ -17,6 +17,9 @@ using Microsoft.Win32;
 using System.IO;
 using Path = System.IO.Path;
 using System.Data.SqlClient;
+using ApplicationRobot.ViewModels;
+
+
 
 namespace ApplicationRobot.Views
 {
@@ -60,10 +63,11 @@ namespace ApplicationRobot.Views
         private void Ellipse_MouseDown(object sender, MouseButtonEventArgs e)
         {
         }
-
-        private void btnContextMenu_Click(object sender, RoutedEventArgs e)
+        private void btnDeconnection_Click(object sender, RoutedEventArgs e)
         {
         }
+
+
         private void btnDeconnexion_Click(object sender, RoutedEventArgs e)
         {
             LoginView loginView = new LoginView();

@@ -33,7 +33,6 @@
                         </TextBlock>
                     </m:MapLayer>
                 </m:Map>
-                
             </Grid>
         </Border>
         <Border Grid.Row="1" >

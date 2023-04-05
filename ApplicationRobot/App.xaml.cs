@@ -15,7 +15,19 @@ namespace ApplicationRobot
     /// </summary>
     public partial class App : Application
     {
+        // Ajoutez cet événement à votre classe App
+        public static event EventHandler ShowLoginView;
+
         protected void ApplicationStart(object sender, StartupEventArgs e)
+        {
+            // Ajoutez cet événement au début de la méthode ApplicationStart
+            ShowLoginView += OnShowLoginView;
+
+            // Affichez la vue de connexion au démarrage de l'application
+            ShowLoginView?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void OnShowLoginView(object sender, EventArgs e)
         {
             var loginView = new LoginView();
             loginView.Show();
@@ -38,6 +50,13 @@ namespace ApplicationRobot
                     }
                 }
             };
+        }
+
+        // N'oubliez pas de vous désabonner de l'événement lorsque l'application se termine
+        protected override void OnExit(ExitEventArgs e)
+        {
+            ShowLoginView -= OnShowLoginView;
+            base.OnExit(e);
         }
     }
 }

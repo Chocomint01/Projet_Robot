@@ -80,9 +80,38 @@ namespace ApplicationRobot.Views
                     {
                         if (reader.Read())
                         {
-                            double centerLatitude = reader.GetDouble(0);
-                            double centerLongitude = reader.GetDouble(1);
-                            double zoomLevel = reader.GetDouble(2);
+                            double defaultLatitude = 48.8566;
+                            double defaultLongitude = 2.3522;
+
+                            double centerLatitude;
+                            if (reader.IsDBNull(0))
+                            {
+                                centerLatitude = defaultLatitude;
+                            }
+                            else
+                            {
+                                centerLatitude = reader.GetDouble(0);
+                            }
+
+                            double centerLongitude;
+                            if (reader.IsDBNull(1))
+                            {
+                                centerLongitude = defaultLongitude;
+                            }
+                            else
+                            {
+                                centerLongitude = reader.GetDouble(1);
+                            }
+
+                            double zoomLevel;
+                            if (reader.IsDBNull(2))
+                            {
+                                zoomLevel = 1.0;
+                            }
+                            else
+                            {
+                                zoomLevel = reader.GetDouble(2);
+                            }
 
                             myMap.Center = new Location(centerLatitude, centerLongitude);
                             myMap.ZoomLevel = zoomLevel;
@@ -91,6 +120,9 @@ namespace ApplicationRobot.Views
                 }
             }
         }
+
+
+
 
         private void DisplayPolygon()
         {

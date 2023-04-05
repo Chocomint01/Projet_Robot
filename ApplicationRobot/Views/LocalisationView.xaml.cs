@@ -1,5 +1,6 @@
 ﻿using ApplicationRobot.Models;
 using Microsoft.Maps.MapControl.WPF;
+using Plugin.BingMap;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -10,19 +11,21 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using WPFLocation = Microsoft.Maps.MapControl.WPF.Location;
+
 
 namespace ApplicationRobot.Views
 {
     public partial class LocalisationView : UserControl
     {
         private MapPolygon polygon;
-        private List<Location> polylinePoints;
+        private List<WPFLocation> polylinePoints;
         private bool isFinished;
 
         public LocalisationView()
         {
             InitializeComponent();
-            polylinePoints = new List<Location>();
+            polylinePoints = new List<WPFLocation>();
             polygon = new MapPolygon
             {
                 Stroke = new SolidColorBrush(Colors.Red),
@@ -67,7 +70,7 @@ namespace ApplicationRobot.Views
         }
         private void AddPointToPolyline(Point mousePosition)
         {
-            Location point = MapWithPolygon.ViewportPointToLocation(mousePosition);
+            WPFLocation point = MapWithPolygon.ViewportPointToLocation(mousePosition);
             polylinePoints.Add(point);
             UpdatePolygon();
             UpdatePointsCoordinatesText();
@@ -76,7 +79,7 @@ namespace ApplicationRobot.Views
         private void UpdatePolygon()
         {
             polygon.Locations = new LocationCollection();
-            foreach (Location point in polylinePoints)
+            foreach (WPFLocation point in polylinePoints)
             {
                 polygon.Locations.Add(point);
             }
@@ -95,7 +98,7 @@ namespace ApplicationRobot.Views
             string fileName = "coordinates.txt";
             StringBuilder sb = new StringBuilder();
             int pointIndex = 1;
-            foreach (Location point in polylinePoints)
+            foreach (WPFLocation point in polylinePoints)
             {
                 sb.AppendLine($"Point {pointIndex}: x = {point.Longitude}, y = {point.Latitude}");
                 pointIndex++;
@@ -110,7 +113,7 @@ namespace ApplicationRobot.Views
 
                 for (int pointIndex = 0; pointIndex < polylinePoints.Count; pointIndex++)
                 {
-                    Location point = polylinePoints[pointIndex];
+                    WPFLocation point = polylinePoints[pointIndex];
                     string query = "INSERT INTO Zone (UserId, PointIndex, Latitude, Longitude) VALUES (@UserId, @PointIndex, @Latitude, @Longitude)";
 
                     using (SqlCommand cmd = new SqlCommand(query, conn))
@@ -172,7 +175,7 @@ namespace ApplicationRobot.Views
                             int pointIndex = reader.GetInt32(0);
                             double latitude = reader.GetDouble(1);
                             double longitude = reader.GetDouble(2);
-                            Location point = new Location(latitude, longitude);
+                            WPFLocation point = new WPFLocation(latitude, longitude);
                             polylinePoints.Add(point);
                         }
                     }
@@ -222,7 +225,7 @@ namespace ApplicationRobot.Views
             StringBuilder sb = new StringBuilder();
             int pointIndex = 1;
 
-            foreach (Location point in polylinePoints)
+            foreach (WPFLocation point in polylinePoints)
             {
                 sb.AppendLine($"Point {pointIndex}: x = {point.Longitude}, y = {point.Latitude}");
                 pointIndex++;
@@ -248,17 +251,49 @@ namespace ApplicationRobot.Views
                     {
                         if (reader.Read())
                         {
-                            double centerLatitude = reader.GetDouble(0);
-                            double centerLongitude = reader.GetDouble(1);
-                            double zoomLevel = reader.GetDouble(2);
+                            double defaultLatitude = 48.8566;
+                            double defaultLongitude = 2.3522;
 
-                            MapWithPolygon.Center = new Location(centerLatitude, centerLongitude);
+                            double centerLatitude;
+                            if (reader.IsDBNull(0))
+                            {
+                                centerLatitude = defaultLatitude;
+                            }
+                            else
+                            {
+                                centerLatitude = reader.GetDouble(0);
+                            }
+
+                            double centerLongitude;
+                            if (reader.IsDBNull(1))
+                            {
+                                centerLongitude = defaultLongitude;
+                            }
+                            else
+                            {
+                                centerLongitude = reader.GetDouble(1);
+                            }
+
+                            // Vérifiez si la colonne MapZoomLevel est null dans la base de données
+                            double zoomLevel;
+                            if (reader.IsDBNull(2))
+                            {
+                                // Attribuez une valeur par défaut si la colonne MapZoomLevel est null
+                                zoomLevel = 1.0; // Vous pouvez remplacer cette valeur par celle qui convient le mieux à votre application
+                            }
+                            else
+                            {
+                                zoomLevel = reader.GetDouble(2);
+                            }
+
+                            MapWithPolygon.Center = new WPFLocation(centerLatitude, centerLongitude);
                             MapWithPolygon.ZoomLevel = zoomLevel;
                         }
                     }
                 }
             }
         }
+
 
         private void SaveMapCenterToDatabase(Guid userId)
         {
@@ -297,7 +332,7 @@ namespace ApplicationRobot.Views
         {
             if (user.CenterLatitude.HasValue && user.CenterLongitude.HasValue)
             {
-                MapWithPolygon.Center = new Location(user.CenterLatitude.Value, user.CenterLongitude.Value);
+                MapWithPolygon.Center = new WPFLocation(user.CenterLatitude.Value, user.CenterLongitude.Value);
             }
         }
 
