@@ -17,40 +17,58 @@ namespace ApplicationRobot
     {
         // Ajoutez cet événement à votre classe App
         public static event EventHandler ShowLoginView;
+        private LoginView _loginView;
 
-        protected void ApplicationStart(object sender, StartupEventArgs e)
+
+        protected override void OnStartup(StartupEventArgs e)
         {
+            base.OnStartup(e);
+
             // Ajoutez cet événement au début de la méthode ApplicationStart
             ShowLoginView += OnShowLoginView;
 
             // Affichez la vue de connexion au démarrage de l'application
+            ShowLogin();
+        }
+
+
+
+        public void ShowLogin()
+        {
             ShowLoginView?.Invoke(this, EventArgs.Empty);
         }
 
         private void OnShowLoginView(object sender, EventArgs e)
         {
-            var loginView = new LoginView();
-            loginView.Show();
-            loginView.IsVisibleChanged += (s, ev) =>
+            if (_loginView == null || !_loginView.IsLoaded)
             {
-                if (loginView.IsVisible == false && loginView.IsLoaded)
+                _loginView = new LoginView();
+                _loginView.IsVisibleChanged += (s, ev) =>
                 {
-                    var mainView = new MainView();
-                    mainView.Show();
-                    loginView.Close();
-
-                    // Chargement de la position de la carte et du niveau de zoom
-                    if (AppSettings.CurrentUser != null)
+                    if (_loginView.IsVisible == false && _loginView.IsLoaded)
                     {
-                        var localisationView = mainView.FindName("LocalisationView") as LocalisationView;
-                        if (localisationView != null)
+                        var mainView = new MainView();
+                        mainView.Show();
+                        //_loginView.Close(); // Ne fermez pas la fenêtre LoginView ici
+                        //_loginView = null;
+
+                        // Chargement de la position de la carte et du niveau de zoom
+                        if (AppSettings.CurrentUser != null)
                         {
-                            localisationView.LoadMapCenterAndZoomFromDatabase(Guid.Parse(AppSettings.CurrentUser.Id));
+                            var localisationView = mainView.FindName("LocalisationView") as LocalisationView;
+                            if (localisationView != null)
+                            {
+                                localisationView.LoadMapCenterAndZoomFromDatabase(Guid.Parse(AppSettings.CurrentUser.Id));
+                            }
                         }
                     }
-                }
-            };
+                };
+            }
+
+            _loginView.Visibility = Visibility.Visible; // Assurez-vous que la vue LoginView est visible
+            _loginView.Show();
         }
+
 
         // N'oubliez pas de vous désabonner de l'événement lorsque l'application se termine
         protected override void OnExit(ExitEventArgs e)

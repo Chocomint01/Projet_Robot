@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ApplicationRobot.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,6 +23,11 @@ namespace ApplicationRobot.Views
         public LoginView()
         {
             InitializeComponent();
+            (this.DataContext as LoginViewModel).LoggedIn += OnLoggedIn;
+        }
+        private void OnLoggedIn(object sender, EventArgs e)
+        {
+            this.Visibility = Visibility.Hidden;
         }
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {

@@ -20,6 +20,8 @@ namespace ApplicationRobot.ViewModels
         private SecureString _password;
         private string _errorMessage;
         private bool _isViewVisible = true;
+        public event EventHandler LoggedIn;
+
 
         private IUserRepository userRepository;
 
@@ -112,13 +114,14 @@ namespace ApplicationRobot.ViewModels
             {
                 Thread.CurrentPrincipal = new GenericPrincipal(
                     new GenericIdentity(Username), null);
-                IsViewVisible = false;
+                LoggedIn?.Invoke(this, EventArgs.Empty);
             }
             else
             {
                 ErrorMessage = "* Nom d'utilisateur ou mot de passe invalide";
             }
         }
+
 
         private void ExecuteRecoverPassCommand(string username, string email)
         {

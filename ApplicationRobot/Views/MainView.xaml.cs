@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
+using ApplicationRobot;
 using Microsoft.Win32;
 using System.IO;
 using Path = System.IO.Path;
@@ -65,15 +66,11 @@ namespace ApplicationRobot.Views
         }
         private void btnDeconnection_Click(object sender, RoutedEventArgs e)
         {
-        }
+            // Fermez le MainView
+            this.Close();
 
-
-        private void btnDeconnexion_Click(object sender, RoutedEventArgs e)
-        {
-            LoginView loginView = new LoginView();
-
-            loginView.Show();
-            Window.GetWindow(this).Close();
+            // Affichez le LoginView en appelant la méthode ShowLogin de la classe App
+            ((App)Application.Current).ShowLogin();
         }
     }
 }
