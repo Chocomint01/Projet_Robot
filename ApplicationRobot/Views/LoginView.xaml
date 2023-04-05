@@ -299,7 +299,7 @@
                                FontSize="10"
                                FontStyle="Normal"
                                FontWeight="Bold"
-                               Foreground="#4C566A">Version 1.1.4</TextBlock>
+                               Foreground="#4C566A">Version DeBug 1.2.7</TextBlock>
                 </Grid>
 
 
