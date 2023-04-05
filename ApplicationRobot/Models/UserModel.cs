@@ -16,5 +16,7 @@ namespace ApplicationRobot.Models
         public string Email { get; set; }
         public double? CenterLatitude { get; set; }
         public double? CenterLongitude { get; set; }
+
+        public double? MapZoomLevel { get; set; }
     }
 }

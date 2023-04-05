@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -39,8 +40,10 @@ namespace ApplicationRobot.Views
                 Guid userId = Guid.Parse(AppSettings.CurrentUser.Id);
                 LoadPolygonPointsFromDatabase(userId);
                 UpdatePolygon();
+                LoadMapCenterAndZoomFromDatabase(userId);
             }
         }
+
         private void btnDefineArea_Click(object sender, RoutedEventArgs e)
         {
             isFinished = false;
@@ -121,50 +124,7 @@ namespace ApplicationRobot.Views
                 }
             }
         }
-        public void LoadMapCenterAndZoomFromDatabase(Guid userId)
-        {
-            using (SqlConnection conn = new SqlConnection("Server=MSI\\LOCAL; Database=MVVMLoginDb; Integrated Security=true"))
-            {
-                conn.Open();
 
-                string query = "SELECT MapCenterLatitude, MapCenterLongitude, MapZoomLevel FROM UserMapSettings WHERE UserId = @UserId";
-
-                using (SqlCommand cmd = new SqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@UserId", userId);
-
-                    using (SqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            double centerLatitude = reader.GetDouble(0);
-                            double centerLongitude = reader.GetDouble(1);
-                            double zoomLevel = reader.GetDouble(2);
-
-                            MapWithPolygon.Center = new Location(centerLatitude, centerLongitude);
-                            MapWithPolygon.ZoomLevel = zoomLevel;
-                        }
-                    }
-                }
-            }
-        }
-
-        private void SaveMapCenterToDatabase(Guid userId)
-        {
-            using (SqlConnection conn = new SqlConnection("Server=MSI\\LOCAL; Database=MVVMLoginDb; Integrated Security=true"))
-            {
-                conn.Open();
-                string query = "UPDATE [User] SET CenterLatitude = @CenterLatitude, CenterLongitude = @CenterLongitude WHERE Id = @UserId";
-
-                using (SqlCommand cmd = new SqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@UserId", userId);
-                    cmd.Parameters.AddWithValue("@CenterLatitude", MapWithPolygon.Center.Latitude);
-                    cmd.Parameters.AddWithValue("@CenterLongitude", MapWithPolygon.Center.Longitude);
-                    cmd.ExecuteNonQuery();
-                }
-            }
-        }
 
         private void btnFinish_Click(object sender, RoutedEventArgs e)
         {
@@ -178,20 +138,21 @@ namespace ApplicationRobot.Views
                 Guid userId = Guid.Parse(AppSettings.CurrentUser.Id);
                 InsertPolygonPointsToDatabase(userId);
                 SaveMapCenterToDatabase(userId);
+                SaveMapZoomLevelToDatabase(userId); // Ajout de cette ligne pour enregistrer le niveau de zoom
+                SharedData.PolygonCoordinates = polylinePoints.ToList();
             }
             else
             {
                 txtValidationMessage.Text = $"Vous n'êtes pas connecté";
             }
         }
-        public void SetMapCenterFromUser(UserModel user)
-        {
-            if (user.CenterLatitude.HasValue && user.CenterLongitude.HasValue)
-            {
-                MapWithPolygon.Center = new Location(user.CenterLatitude.Value, user.CenterLongitude.Value);
-            }
-        }
 
+
+        private void ClearPolygon()
+        {
+            polylinePoints.Clear();
+            NewPolygonLayer.Children.Remove(polygon);
+        }
         private void LoadPolygonPointsFromDatabase(Guid userId)
         {
             using (SqlConnection conn = new SqlConnection("Server=MSI\\LOCAL; Database=MVVMLoginDb; Integrated Security=true"))
@@ -227,7 +188,10 @@ namespace ApplicationRobot.Views
                 Guid userId = Guid.Parse(AppSettings.CurrentUser.Id);
                 DeletePolygonPointsFromDatabase(userId);
                 RemovePolygonFromMap();
+                ClearPolygon();
                 txtValidationMessage.Text = "Le domaine a été supprimé.";
+                SharedData.OnPolygonDeleted();
+
             }
             else
             {
@@ -266,5 +230,87 @@ namespace ApplicationRobot.Views
 
             txtPointsCoordinates.Text = sb.ToString();
         }
+        //enregistrer la position de la carte 
+
+        public void LoadMapCenterAndZoomFromDatabase(Guid userId)
+        {
+            using (SqlConnection conn = new SqlConnection("Server=MSI\\LOCAL; Database=MVVMLoginDb; Integrated Security=true"))
+            {
+                conn.Open();
+
+                string query = "SELECT CenterLatitude, CenterLongitude, MapZoomLevel FROM [User] WHERE Id = @UserId";
+
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@UserId", userId);
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            double centerLatitude = reader.GetDouble(0);
+                            double centerLongitude = reader.GetDouble(1);
+                            double zoomLevel = reader.GetDouble(2);
+
+                            MapWithPolygon.Center = new Location(centerLatitude, centerLongitude);
+                            MapWithPolygon.ZoomLevel = zoomLevel;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void SaveMapCenterToDatabase(Guid userId)
+        {
+            using (SqlConnection conn = new SqlConnection("Server=MSI\\LOCAL; Database=MVVMLoginDb; Integrated Security=true"))
+            {
+                conn.Open();
+                string query = "UPDATE [User] SET CenterLatitude = @CenterLatitude, CenterLongitude = @CenterLongitude WHERE Id = @UserId";
+
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@UserId", userId);
+                    cmd.Parameters.AddWithValue("@CenterLatitude", MapWithPolygon.Center.Latitude);
+                    cmd.Parameters.AddWithValue("@CenterLongitude", MapWithPolygon.Center.Longitude);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        private void SaveMapZoomLevelToDatabase(Guid userId)
+        {
+            using (SqlConnection conn = new SqlConnection("Server=MSI\\LOCAL; Database=MVVMLoginDb; Integrated Security=true"))
+            {
+                conn.Open();
+                string query = "UPDATE [User] SET MapZoomLevel = @ZoomLevel WHERE Id = @UserId";
+
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@UserId", userId);
+                    cmd.Parameters.AddWithValue("@ZoomLevel", MapWithPolygon.ZoomLevel);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public void SetMapCenterFromUser(UserModel user)
+        {
+            if (user.CenterLatitude.HasValue && user.CenterLongitude.HasValue)
+            {
+                MapWithPolygon.Center = new Location(user.CenterLatitude.Value, user.CenterLongitude.Value);
+            }
+        }
+
+        private void LocalisationView_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (AppSettings.CurrentUser != null)
+            {
+                Guid userId = Guid.Parse(AppSettings.CurrentUser.Id);
+                SaveMapCenterToDatabase(userId);
+                SaveMapZoomLevelToDatabase(userId);
+            }
+        }
+
+
     }
 }

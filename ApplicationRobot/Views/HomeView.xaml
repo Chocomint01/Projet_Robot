@@ -6,6 +6,8 @@
              xmlns:local="clr-namespace:ApplicationRobot.Views"
              xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
              xmlns:m="clr-namespace:Microsoft.Maps.MapControl.WPF;assembly=Microsoft.Maps.MapControl.WPF" 
+            
+
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              >
@@ -139,7 +141,7 @@
                                             CornerRadius="12" >
 
                                         <TextBlock x:Name="T1" HorizontalAlignment="Center"
-                                                   Text="OFF"
+                                                   Text=""
                                                    Margin="0 0 1 0"
                                                    VerticalAlignment="Center"
                                                    TextAlignment="Center"
@@ -152,7 +154,7 @@
                                     <Trigger Property="IsChecked" Value="True">
                                         <Setter TargetName="B2" Property="HorizontalAlignment" Value="Right"/>
                                         <Setter TargetName="B1" Property="Background" Value="lime"/>
-                                        <Setter TargetName="T1" Property="Text" Value="On"/>
+                                        <Setter TargetName="T1" Property="Text" Value=""/>
                                     </Trigger>
                                 </ControlTemplate.Triggers>
                             </ControlTemplate>
@@ -231,9 +233,16 @@
         </Border>
 
         <Border CornerRadius="10" Grid.Column="2">
-            
-            <m:Map  x:Name="myMap" BorderBrush="Gray" BorderThickness="0" FontFamily="Arial"
-                   CredentialsProvider="45fPRdARyErm6xKcI77N~BsFC2hL1XZ-w3pv3jTJCZw~Alcj0jdfgpYl9RKvBZ1L01BKlGQPeSiPO9PLJhqEgmZHnbi2T-42rN9zNvlUkwDc"/>
+
+            <m:Map x:Name="myMap" BorderBrush="Gray" BorderThickness="0" FontFamily="Arial"
+       CredentialsProvider="45fPRdARyErm6xKcI77N~BsFC2hL1XZ-w3pv3jTJCZw~Alcj0jdfgpYl9RKvBZ1L01BKlGQPeSiPO9PLJhqEgmZHnbi2T-42rN9zNvlUkwDc"
+       AnimationLevel="None"
+       MouseLeftButtonDown="Map_MouseLeftButtonDown" MouseRightButtonDown="Map_MouseRightButtonDown" MouseDoubleClick="Map_MouseDoubleClick" MouseWheel="Map_MouseWheel">
+            </m:Map>
+
+
+
+
         </Border>
         <Border Grid.Column="2" Grid.Row="2" BorderBrush="Gray" Background="#EDEDED" BorderThickness="0" CornerRadius="10">
             <Grid>
