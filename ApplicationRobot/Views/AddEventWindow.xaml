@@ -1,0 +1,27 @@
+﻿<Window x:Class="ApplicationRobot.Views.AddEventWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:ApplicationRobot.Views"
+        Title="Ajouter un événement" Height="300" Width="400">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Label Content="Nom de l'événement:" Grid.Row="0" />
+        <TextBox x:Name="EventNameTextBox" Grid.Row="1" Margin="0,0,0,10" />
+
+        <Label Content="Domaine:" Grid.Row="2" />
+        <ComboBox x:Name="DomainComboBox" Grid.Row="3" Margin="0,0,285,48">
+            <ComboBoxItem Content="Hors domaine" />
+        </ComboBox>
+
+        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button x:Name="AddEventButton" Content="Ajouter" Margin="5" Click="AddEventButton_Click" />
+            <Button x:Name="CancelButton" Content="Annuler" Margin="5" Click="CancelButton_Click" />
+        </StackPanel>
+    </Grid>
+</Window>

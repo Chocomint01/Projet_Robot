@@ -1,0 +1,68 @@
+﻿<Window x:Class="ApplicationRobot.Views.DomainesWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Sélectionner un domaine" Height="270" Width="628"
+        xmlns:local="clr-namespace:ApplicationRobot.Views"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        ResizeMode="NoResize">
+    <Window.Resources>
+        <local:IsVisibleToTextConverter x:Key="IsVisibleToTextConverter" />
+    </Window.Resources>
+    <Grid MouseDown="Grid_MouseDown">
+        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="513"/>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        
+        <Grid Grid.Column="0">
+            <DataGrid x:Name="DomainesDataGrid"
+          AutoGenerateColumns="False"
+          IsReadOnly="True"
+          Margin="10,10,0,10"
+          Style="{StaticResource DataGridStyle1}"
+          RowStyle="{StaticResource DataGridRowStyle1}"
+          ColumnHeaderStyle="{StaticResource DataGridColumnHeaderStyle1}"
+          CellStyle="{StaticResource DataGridCellStyle1}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID"
+                    Binding="{Binding Id}"
+                    ElementStyle="{StaticResource DataGridCellTextBlockStyle1}"
+                    HeaderStyle="{StaticResource DataGridColumnHeaderStyle1}"/>
+                    <DataGridTextColumn Header="Nom du domaine"
+                    Binding="{Binding NomDomaine}"
+                    ElementStyle="{StaticResource DataGridCellTextBlockStyle1}"
+                    HeaderStyle="{StaticResource DataGridColumnHeaderStyle1}"/>
+                    <DataGridTextColumn Header="Nombre de points"
+                    Binding="{Binding NombrePoints}"
+                    ElementStyle="{StaticResource DataGridCellTextBlockStyle1}"
+                    HeaderStyle="{StaticResource DataGridColumnHeaderStyle1}"/>
+                    <DataGridTextColumn Header="État"
+                    Binding="{Binding IsSelected, Converter={StaticResource IsVisibleToTextConverter}}"
+                    ElementStyle="{StaticResource DataGridCellTextBlockStyle1}"
+                    HeaderStyle="{StaticResource DataGridColumnHeaderStyle1}"/>
+
+                </DataGrid.Columns>
+            </DataGrid>
+
+        </Grid>
+        <StackPanel Grid.Column="1" Orientation="Vertical">
+            <Button x:Name="btnSupprimerTout" Content="Supp ALL" Click="btnSupprimerTout_Click" Width="76" Height="25" HorizontalAlignment="Center"
+                    Margin="10"/>
+            <Button x:Name="btnSupprimer" Content="Supprimer" HorizontalAlignment="Center" VerticalAlignment="Top" Width="76" Click="btnSupprimer_Click" Height="25" 
+                    Margin="10"/>
+            <Button x:Name="btnLocaliser" Content="Localiser" HorizontalAlignment="Center" Click="btnLocaliser_Click" Height="25" Width="76"
+                    Margin="10"/>
+            <Button x:Name="btnQuitter" Content="Quitter" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10 90 20 0" Click="btnQuitter_Click" Height="25" Width="76"
+                    Background="#FF2C2C" FontWeight="Bold" Foreground="WhiteSmoke"/>
+            
+
+        </StackPanel>
+        
+
+    </Grid>
+</Window>
